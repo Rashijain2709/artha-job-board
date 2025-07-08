@@ -15,10 +15,11 @@ const ImportLogTable = () => {
     axios
       .get(`${API_URL}/api/import-logs`)
       .then((res) => {
-        if (Array.isArray(res.data)) {
+        const contentType = res.headers['content-type'];
+        if (contentType && contentType.includes('application/json') && Array.isArray(res.data)) {
           setLogs(res.data);
         } else {
-          console.error('Expected array but got:', res.data);
+          console.error('Expected JSON array but got:', res.data);
           setLogs([]);
           setError('Invalid response from server');
         }
