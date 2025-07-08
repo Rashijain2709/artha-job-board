@@ -15,4 +15,4 @@ const ImportLogSchema = new mongoose.Schema({
   ]
 });
 
-module.exports = mongoose.model('ImportLog', ImportLogSchema);
+module.exports = mongoose.model('import_logs', ImportLogSchema);
