@@ -3,18 +3,23 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Job = require('../models/Job.js');
 const ImportLog = require('../models/ImportLog.js');
-const { redisConnection } = require('./queue.js');
+const { createClient } = require('redis');
 
 dotenv.config();
 
-// MongoDB connection
+// Redis Connection (BullMQ expects a redis client config object)
+const redisConnection = {
+  url: process.env.REDIS_URL
+};
+
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log('🚀 Worker connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Robust extractText function
+// Helper: Text extractor
 const extractText = (val) => {
   if (!val) return null;
   if (typeof val === 'string') return val;
@@ -46,9 +51,7 @@ const worker = new Worker(
         j.updatedAt = j.updatedAt || new Date();
         j.type = j.type || 'job';
 
-        if (!j.jobId || !j.title) {
-          throw new Error('Missing jobId or title');
-        }
+        if (!j.jobId || !j.title) throw new Error('Missing jobId or title');
 
         const existing = await Job.findOne({ jobId: j.jobId });
 
@@ -85,7 +88,7 @@ const worker = new Worker(
   }
 );
 
-// Worker events
+// Events
 worker.on('failed', (job, err) => {
   console.error(`❌ Job failed [${job.id}]:`, err.message);
 });
