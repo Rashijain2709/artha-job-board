@@ -4,18 +4,31 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const startCron = require('./cron/jobCron');
 const logsRoute = require('./routes/logs.js');
+const ImportLog = require('./models/ImportLog');
 
 // Load environment variables
 dotenv.config();
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://artha-job-board.vercel.app',
+];
+
 const app = express();
+
 app.use(cors({
-  origin: 'https://artha-job-board.vercel.app',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 }));
 app.use(express.json());
 app.use('/api/logs', logsRoute);
 
-const ImportLog = require('./models/ImportLog');
 
 app.get('/api/import-logs', async (req, res) => {
   const logs = await ImportLog.find().sort({ timestamp: -1 });
