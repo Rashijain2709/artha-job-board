@@ -15,7 +15,7 @@ const urls = [
 ];
 
 const startCron = () => {
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('0 * * * *', async () => {
     for (const url of urls) {
       try {
         const jobs = await fetchJobs(url);

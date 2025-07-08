@@ -8,9 +8,9 @@ const ImportLogTable = () => {
 
   useEffect(() => {
     const API_URL =
-      process.env.NODE_ENV === 'development'
-        ? 'http://localhost:5000'
-        : process.env.REACT_APP_API_URL;
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000'
+    : process.env.REACT_APP_API_URL;
 
     axios
       .get(`${API_URL}/api/import-logs`)
