@@ -6,7 +6,8 @@ const ImportLogTable = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/import-logs')
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    axios.get(`${API_URL}/api/import-logs`)
       .then((res) => {
         setLogs(res.data);
         setLoading(false);
