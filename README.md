@@ -25,7 +25,7 @@ A scalable job import system that fetches jobs from external APIs, queues them u
 
 1. **Clone the repository**
    ```sh
-   git clone <your-repo-url>
+   git clone https://github.com/Rashijain2709/artha-job-board.git
    cd artha-job-board
    ```
 
@@ -104,6 +104,16 @@ artha-job-board/
 - `.env` files are gitignored for security.
 - Update `MONGO_URI`, `REDIS_HOST`, and `REDIS_PORT` as needed for your environment.
 - For production, consider Dockerizing MongoDB, Redis, and the app.
+
+---
+
+## Screenshots
+![App Screenshot](docs/screenshot-placeholder.png)
+
+---
+
+## Contributors
+- [Your Name](https://github.com/your-username)
 
 ---
 
