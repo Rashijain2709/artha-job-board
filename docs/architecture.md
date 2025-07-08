@@ -55,22 +55,26 @@ This document outlines the architecture and key design decisions for the Artha J
 ### 5. Modular Service Layer
 - **Job fetching and parsing** are encapsulated in service modules for reusability and easier testing.
 
+### 5. Queue and Worker System
+- The job import queue is implemented using **Redis** and **BullMQ** for scalable background processing.
+- **Worker concurrency** is configurable via the `BATCH_SIZE` environment variable, allowing the system to scale based on workload and available resources.
+
+### 6. Import Logging
+- Each import run logs the following fields in the `ImportLog` model:
+  - `timestamp`
+  - `totalFetched`
+  - `totalImported`
+  - `newJobs`
+  - `updatedJobs`
+  - `failedJobs` (with reasons for each failure)
+- Errors encountered during job processing are captured and included in the `failedJobs` array for transparency and debugging.
+
+### 7. Deployment
+- The system can be containerized using Docker for easy deployment and scalability. (See README for instructions if implemented.)
+
 ---
 
 ## Future Considerations
 - **Authentication & Authorization:** Not currently implemented, but planned for future versions.
 - **Scalability:** The queue and worker system can be scaled horizontally as needed.
 - **Error Handling:** Centralized error handling and alerting can be improved.
-
----
-
-## Diagram
-
-```
-[User] <-> [React Frontend] <-> [Express API] <-> [Job Queue/Worker] <-> [Database]
-```
-
----
-
-## Revision History
-- _2024-06-07_: Initial architecture documentation created. 

@@ -11,6 +11,11 @@ A scalable job import system that fetches jobs from external APIs, queues them u
 - 📊 Track import history (new, updated, failed)
 - 👀 View import logs in a web UI
 - ⏰ Automated hourly job fetching (via cron)
+- 🖥️ **Frontend:** Next.js admin UI for viewing import logs/history
+- 🛠️ The job import queue uses **Redis** and **BullMQ** for scalable background processing
+- ⚙️ **Worker concurrency** is configurable via the `BATCH_SIZE` environment variable
+- 📝 Each import run logs: `timestamp`, `totalFetched`, `totalImported`, `newJobs`, `updatedJobs`, `failedJobs` (with reasons)
+- ❗ Errors during job processing are logged and included in import logs for transparency
 
 ---
 
@@ -103,7 +108,7 @@ artha-job-board/
 ## 📝 Notes
 - 🔒 `.env` files are gitignored for security.
 - ⚙️ Update `MONGO_URI`, `REDIS_HOST`, and `REDIS_PORT` as needed for your environment.
-- 🐳 For production, consider Dockerizing MongoDB, Redis, and the app.
+- 🐳 For production, consider Dockerizing MongoDB, Redis, and the app. See the architecture documentation for more details on deployment.
 
 ---
 
