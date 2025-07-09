@@ -7,19 +7,32 @@ const { createClient } = require('redis');
 
 dotenv.config();
 
-// Redis Connection (BullMQ expects a redis client config object)
+// ✅ Redis Connection for BullMQ
 const redisConnection = {
-  url: process.env.REDIS_URL
+  url: process.env.REDIS_URL,
 };
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('🚀 Worker connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+// ✅ Optional: Test Redis connection before starting Worker
+const testRedis = async () => {
+  const client = createClient({ url: process.env.REDIS_URL });
+  client.on('error', (err) => console.error('❌ Redis error:', err));
+  await client.connect();
+  console.log('✅ Redis connected');
+  await client.disconnect();
+};
 
-// Helper: Text extractor
+testRedis().catch(console.error);
+
+// ✅ MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('🚀 Worker connected to MongoDB'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
+
+// ✅ Text extraction helper
 const extractText = (val) => {
   if (!val) return null;
   if (typeof val === 'string') return val;
@@ -32,7 +45,7 @@ const extractText = (val) => {
   return String(val);
 };
 
-// BullMQ Worker
+// ✅ BullMQ Worker setup
 const worker = new Worker(
   'job-import',
   async (job) => {
@@ -65,7 +78,7 @@ const worker = new Worker(
       } catch (err) {
         failed.push({
           jobId: extractText(j.jobId || j.guid || j.link) || 'N/A',
-          reason: err.message
+          reason: err.message,
         });
       }
     }
@@ -77,18 +90,18 @@ const worker = new Worker(
       totalImported: newJobs + updatedJobs,
       newJobs,
       updatedJobs,
-      failedJobs: failed
+      failedJobs: failed,
     }).save();
 
     console.log(`✔️ Import complete from ${fileName}`);
   },
   {
     connection: redisConnection,
-    concurrency: parseInt(process.env.BATCH_SIZE || '5')
+    concurrency: parseInt(process.env.BATCH_SIZE || '5'),
   }
 );
 
-// Events
+// ✅ Worker Event Logging
 worker.on('failed', (job, err) => {
   console.error(`❌ Job failed [${job.id}]:`, err.message);
 });
